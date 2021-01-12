@@ -884,6 +884,7 @@ public class BrokerController {
         if (!messageStoreConfig.isEnableDLegerCommitLog()) {
             startProcessorByHa(messageStoreConfig.getBrokerRole());
             handleSlaveSynchronize(messageStoreConfig.getBrokerRole());
+            // 启动之后立即向集群中所有的NameServer注册Broker信息
             this.registerBrokerAll(true, false, true);
         }
 
@@ -897,6 +898,7 @@ public class BrokerController {
                     log.error("registerBrokerAll Exception", e);
                 }
             }
+            // 按照配置的时间向所有集群所有的NameServer发送心跳包（默认为30s，配置大于10s，小于60s）
         }, 1000 * 10, Math.max(10000, Math.min(brokerConfig.getRegisterNameServerPeriod(), 60000)), TimeUnit.MILLISECONDS);
 
         if (this.brokerStatsManager != null) {

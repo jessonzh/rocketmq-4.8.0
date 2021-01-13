@@ -22,8 +22,14 @@ import org.apache.rocketmq.client.log.ClientLogger;
 import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.common.message.MessageQueue;
 
+/**
+ * 消息发送失败策略
+ */
 public class MQFaultStrategy {
     private final static InternalLogger log = ClientLogger.getLog();
+    /**
+     * Broker故障延迟机制，维护每个Broker的发送消息的延迟
+     */
     private final LatencyFaultTolerance<String> latencyFaultTolerance = new LatencyFaultToleranceImpl();
 
     private boolean sendLatencyFaultEnable = false;
@@ -98,10 +104,19 @@ public class MQFaultStrategy {
     public void updateFaultItem(final String brokerName, final long currentLatency, boolean isolation) {
         if (this.sendLatencyFaultEnable) {
             long duration = computeNotAvailableDuration(isolation ? 30000 : currentLatency);
+            // isolation 是否隔离
+            // 如果为true，则使用默认的30s来计算Broker故障规避时长
+            // 如果为false，则使用本次消息发送延迟时间来计算Broker故障规避时长
+            //
             this.latencyFaultTolerance.updateFaultItem(brokerName, currentLatency, duration);
         }
     }
 
+    /**
+     * 从latencyMax数组尾部开始查找，找到第一个比currentLatency小的下标，然后从notAvailableDuration数组中获取需要规避的时长
+     * @param currentLatency
+     * @return
+     */
     private long computeNotAvailableDuration(final long currentLatency) {
         for (int i = latencyMax.length - 1; i >= 0; i--) {
             if (currentLatency >= latencyMax[i])

@@ -889,6 +889,7 @@ public class BrokerController {
             this.registerBrokerAll(true, false, true);
         }
 
+        // 每30s向集群所有的NameServer发送心跳包（默认为30s，可以配置大于10s，小于60s）
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
@@ -899,7 +900,6 @@ public class BrokerController {
                     log.error("registerBrokerAll Exception", e);
                 }
             }
-            // 按照配置的时间向所有集群所有的NameServer发送心跳包（默认为30s，配置大于10s，小于60s）
         }, 1000 * 10, Math.max(10000, Math.min(brokerConfig.getRegisterNameServerPeriod(), 60000)), TimeUnit.MILLISECONDS);
 
         if (this.brokerStatsManager != null) {

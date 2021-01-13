@@ -574,6 +574,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                     mq = mqSelected;
                     brokersSent[times] = mq.getBrokerName();
                     try {
+                        // 开始发送
                         beginTimestampPrev = System.currentTimeMillis();
                         if (times > 0) {
                             //Reset topic with namespace during resend.
@@ -587,6 +588,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
                         sendResult = this.sendKernelImpl(msg, mq, communicationMode, sendCallback, topicPublishInfo, timeout - costTime);
                         endTimestamp = System.currentTimeMillis();
+                        // 正常发送也会记录一下延迟时间
                         this.updateFaultItem(mq.getBrokerName(), endTimestamp - beginTimestampPrev, false);
                         switch (communicationMode) {
                             case ASYNC:
@@ -596,6 +598,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                             case SYNC:
                                 if (sendResult.getSendStatus() != SendStatus.SEND_OK) {
                                     if (this.defaultMQProducer.isRetryAnotherBrokerWhenNotStoreOK()) {
+                                        // 同步发送成功但存储有问题时 && 配置存储异常时重新发送开关时，进行重试
                                         continue;
                                     }
                                 }

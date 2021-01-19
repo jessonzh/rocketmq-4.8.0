@@ -90,8 +90,10 @@ public class PullMessageService extends ServiceThread {
     public void run() {
         log.info(this.getServiceName() + " service started");
 
+        // 其他线程设置stopped为true的时候，此线程会停止
         while (!this.isStopped()) {
             try {
+                // 获取一个PullRequest消息拉取任务
                 PullRequest pullRequest = this.pullRequestQueue.take();
                 this.pullMessage(pullRequest);
             } catch (InterruptedException ignored) {

@@ -270,6 +270,7 @@ public class MQClientInstance {
             }, 1000 * 10, 1000 * 60 * 2, TimeUnit.MILLISECONDS);
         }
 
+        // 消费者每30s从NameServer获取所有Topic的最新队列情况
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
@@ -282,6 +283,9 @@ public class MQClientInstance {
             }
         }, 10, this.clientConfig.getPollNameServerInterval(), TimeUnit.MILLISECONDS);
 
+        // Consumer跟Broker是长连接，会每30s发心跳信息到Broker
+        // Broker端每10s检查一次当前存活的Consumer，若发现某个Consumer 2分钟内没有心跳，就断开与该Consumer的连接
+        // 并且向该消费组的其他实例发送通知，触发该消费者集群的负载均衡
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override

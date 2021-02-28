@@ -1,16 +1,31 @@
-*dependency-reduced-pom.xml
-.classpath
-.project
-.settings/
+HELP.md
 target/
-devenv
-*.log*
-*.iml
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
 .idea
-*.versionsBackup
-!NOTICE-BIN
-!LICENSE-BIN
-.DS_Store
-localbin
-nohup.out
-data/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
